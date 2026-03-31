@@ -956,43 +956,105 @@ img {
 
 @media (max-width: 768px) {
     .hero-title { font-size: 2.5rem; }
-    .hero-cta { flex-direction: column; }
+    .hero-cta { flex-direction: column; align-items: center; }
     .footer-grid { grid-template-columns: 1fr; gap: 2.5rem; }
     
     .mobile-menu-btn { display: flex; }
     
+    /* Backdrop overlay drawn via body pseudo when menu is open */
+    body.menu-open::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
     .nav-links {
         position: fixed;
         top: 0;
         right: -100%;
-        width: 80%;
-        max-width: 300px;
+        width: 75%;
+        max-width: 320px;
         height: 100vh;
         background: var(--ocean-dark);
         flex-direction: column;
+        align-items: center;
         justify-content: center;
-        transition: var(--transition-slow);
-        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
+        gap: 0;
+        padding: 6rem 0 3rem;
+        transition: right 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: -10px 0 40px rgba(0, 0, 0, 0.4);
+        z-index: 1000;
+        overflow-y: auto;
     }
     
     .nav-links.active { right: 0; }
     
+    .nav-links > a,
+    .nav-links > .dropdown {
+        width: 100%;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-links > a:last-child,
+    .nav-links > .dropdown:last-of-type {
+        border-bottom: none;
+    }
+
     .nav-links a:not(.btn-primary) {
-        font-size: 1.2rem;
-        color: white;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.9);
+        display: block;
+        padding: 1rem 2rem;
+        width: 100%;
+        text-align: center;
+        letter-spacing: 0.5px;
+        transition: color 0.2s ease, background 0.2s ease;
+    }
+
+    .nav-links a:not(.btn-primary):hover {
+        color: var(--ocean-light);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Remove underline animation in mobile */
+    .nav-links a:not(.btn-primary)::after {
+        display: none;
+    }
+
+    .nav-links .btn-primary {
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+        width: auto;
+        padding: 0.9rem 2.5rem;
     }
     
     .dropdown {
         width: 100%;
     }
+
+    .dropdown > a {
+        justify-content: center;
+    }
     
     .dropdown-content {
         position: static;
-        background: transparent;
+        background: rgba(255, 255, 255, 0.05);
         box-shadow: none;
         display: none;
         padding: 0;
-        margin-top: 0.5rem;
+        margin: 0;
+        border-radius: 0;
+        flex-direction: column;
     }
     
     .dropdown:active .dropdown-content,
@@ -1001,15 +1063,18 @@ img {
     }
 
     .dropdown-content a {
-        color: rgba(255,255,255,0.8) !important;
-        padding: 0.5rem 1rem 0.5rem 2.5rem;
-        font-size: 1rem;
+        color: rgba(255,255,255,0.7) !important;
+        padding: 0.6rem 2rem !important;
+        font-size: 0.9rem !important;
+        text-align: center;
+        border-bottom: none !important;
+        letter-spacing: 0.3px;
     }
     
     .dropdown-content a:hover {
-        background: transparent;
-        color: white !important;
-        padding-left: 2.5rem;
+        background: rgba(255,255,255,0.08) !important;
+        color: var(--ocean-light) !important;
+        padding-left: 2rem !important;
     }
 
     .navbar.scrolled .mobile-menu-btn span {
@@ -1026,5 +1091,10 @@ img {
     .mobile-menu-btn.active span:nth-child(3) {
         transform: translateY(-8px) rotate(-45deg);
         background-color: white !important;
+    }
+
+    /* Ensure hamburger is always on top of menu */
+    .mobile-menu-btn {
+        z-index: 1001;
     }
 }
