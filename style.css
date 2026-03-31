@@ -239,6 +239,46 @@ img {
     width: 100%;
 }
 
+/* Dropdown Menu */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: var(--text-light);
+    min-width: 220px;
+    box-shadow: 0 10px 30px rgba(0, 31, 63, 0.1);
+    z-index: 1002;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    flex-direction: column;
+    padding: 0.5rem 0;
+}
+
+.dropdown:hover .dropdown-content {
+    display: flex;
+}
+
+.dropdown-content a {
+    color: var(--ocean-dark) !important;
+    padding: 0.8rem 1.5rem;
+    font-size: 0.95rem;
+    transition: var(--transition-fast);
+}
+
+.dropdown-content a::after {
+    display: none !important;
+}
+
+.dropdown-content a:hover {
+    background-color: rgba(0, 119, 182, 0.05);
+    padding-left: 2rem;
+}
+
 .mobile-menu-btn {
     display: none;
     flex-direction: column;
@@ -442,6 +482,124 @@ img {
 }
 
 /* ==========================================================================
+   Interactive Accordion Gallery
+   ========================================================================== */
+.accordion-gallery {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 4rem;
+    height: 450px;
+    width: 100%;
+}
+
+.accordion-item {
+    flex: 1;
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: var(--shadow-glass);
+}
+
+.accordion-item.active {
+    flex: 3;
+    box-shadow: var(--shadow-hover);
+}
+
+.accordion-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,31,63,0.9) 0%, rgba(0,31,63,0.2) 100%);
+    transition: var(--transition-slow);
+}
+
+.accordion-item:hover .accordion-overlay, .accordion-item:focus .accordion-overlay {
+    background: linear-gradient(to top, rgba(0,31,63,0.9) 0%, rgba(0,31,63,0.4) 100%);
+}
+
+.accordion-item:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+}
+
+.accordion-content {
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+    right: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.accordion-icon {
+    font-size: 3rem;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.2);
+    flex-shrink: 0;
+    transition: var(--transition-slow);
+}
+
+.accordion-item.active .accordion-icon {
+    transform: scale(1.1);
+    background: rgba(255,255,255,0.2);
+}
+
+.accordion-text {
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.accordion-item.active .accordion-text {
+    width: 400px;
+    opacity: 1;
+    padding-left: 0.5rem;
+}
+
+.accordion-text h3 {
+    color: var(--ocean-light);
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    min-width: 300px;
+    white-space: normal;
+}
+
+.accordion-text p {
+    color: var(--text-light);
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    min-width: 300px;
+    white-space: normal;
+}
+
+@media (max-width: 768px) {
+    .accordion-gallery {
+        flex-direction: column;
+        height: 600px;
+    }
+    .accordion-item.active {
+        flex: 2;
+    }
+    .accordion-text p, .accordion-text h3 {
+        min-width: 250px;
+    }
+}
+
+/* ==========================================================================
    Diving Features Section
    ========================================================================== */
 .diving-section {
@@ -551,9 +709,26 @@ img {
 
 .footer-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 4rem;
+    grid-template-columns: 1.5fr 1.2fr 1fr 1.5fr;
+    gap: 3rem;
     margin-bottom: 4rem;
+}
+
+.footer-address p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+}
+
+.map-link {
+    color: var(--ocean-light) !important;
+    text-decoration: underline;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.map-link:hover {
+    color: white !important;
 }
 
 .footer-logo {
@@ -635,6 +810,123 @@ img {
 }
 
 /* ==========================================================================
+   Gallery Page Styles
+   ========================================================================== */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem 0;
+}
+
+.gallery-item {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    box-shadow: var(--shadow-glass);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+}
+
+.gallery-item:hover img {
+    transform: scale(1.05);
+}
+
+/* ==========================================================================
+   Contact Page Styles
+   ========================================================================== */
+.contact-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    margin-top: 3rem;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: var(--ocean-dark);
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 1rem;
+    border: 1px solid rgba(0, 31, 63, 0.2);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    background: white;
+    transition: var(--transition-fast);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--ocean-blue);
+    box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.1);
+}
+
+/* ==========================================================================
+   Offers Page Styles
+   ========================================================================== */
+.offers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.offer-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    box-shadow: var(--shadow-glass);
+    text-align: center;
+    border-top: 5px solid var(--ocean-blue);
+    transition: var(--transition-fast);
+}
+
+.offer-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-hover);
+}
+
+.offer-price {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--ocean-dark);
+    margin: 1.5rem 0;
+}
+
+.offer-features {
+    list-style: none;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.offer-features li {
+    padding: 0.8rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+/* ==========================================================================
    Animations & Responsive
    ========================================================================== */
 .fade-in {
@@ -690,6 +982,36 @@ img {
         color: white;
     }
     
+    .dropdown {
+        width: 100%;
+    }
+    
+    .dropdown-content {
+        position: static;
+        background: transparent;
+        box-shadow: none;
+        display: none;
+        padding: 0;
+        margin-top: 0.5rem;
+    }
+    
+    .dropdown:active .dropdown-content,
+    .dropdown:focus-within .dropdown-content {
+        display: flex;
+    }
+
+    .dropdown-content a {
+        color: rgba(255,255,255,0.8) !important;
+        padding: 0.5rem 1rem 0.5rem 2.5rem;
+        font-size: 1rem;
+    }
+    
+    .dropdown-content a:hover {
+        background: transparent;
+        color: white !important;
+        padding-left: 2.5rem;
+    }
+
     .navbar.scrolled .mobile-menu-btn span {
         background-color: var(--ocean-dark);
     }

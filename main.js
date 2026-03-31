@@ -26,9 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Navbar Scroll Effect
     const navbar = document.getElementById('navbar');
+    const hasHero = document.querySelector('.hero') !== null;
     
     const handleScroll = () => {
-        if (window.scrollY > 50) {
+        if (!hasHero || window.scrollY > 50) {
             navbar.classList.add('scrolled');
         } else {
             navbar.classList.remove('scrolled');
@@ -81,4 +82,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // 5. Accordion Interactive Gallery
+    const accordionItems = document.querySelectorAll('.accordion-item');
+    if (accordionItems.length > 0) {
+        accordionItems.forEach(item => {
+            // Hover for desktop
+            item.addEventListener('mouseenter', () => {
+                accordionItems.forEach(el => el.classList.remove('active'));
+                item.classList.add('active');
+            });
+            // Focus for accessibility and mobile taps
+            item.addEventListener('focus', () => {
+                accordionItems.forEach(el => el.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+    }
 });
