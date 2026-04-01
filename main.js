@@ -1,144 +1,182 @@
 /**
- * Raja Laut Dive Resort - Main JavaScript
- * Handles interactions, animations, and UI enhancements.
+ * Raja Laut Dive Resort — Main JS
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Mobile Navigation Toggle
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    const navLinks = document.querySelector('.nav-links');
-    
-    if(mobileMenuBtn && navLinks) {
-        const openMenu = () => {
-            mobileMenuBtn.classList.add('active');
-            navLinks.classList.add('active');
-            document.body.classList.add('menu-open');
-        };
-        const closeMenu = () => {
-            mobileMenuBtn.classList.remove('active');
-            navLinks.classList.remove('active');
-            document.body.classList.remove('menu-open');
-            // Collapse all dropdowns when menu closes
-            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
-        };
 
-        mobileMenuBtn.addEventListener('click', (e) => {
+    /* ─────────────────────────────────────────────
+       1.  Navbar scroll effect
+    ───────────────────────────────────────────── */
+    const navbar  = document.getElementById('navbar');
+    const hasHero = document.querySelector('.hero') !== null;
+
+    function updateNavbar() {
+        if (!hasHero || window.scrollY > 60) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    }
+
+    window.addEventListener('scroll', updateNavbar, { passive: true });
+    updateNavbar();                          // run once on load
+
+
+    /* ─────────────────────────────────────────────
+       2.  Mobile menu — open / close helpers
+    ───────────────────────────────────────────── */
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const navLinks  = document.querySelector('.nav-links');
+
+    function openMenu() {
+        mobileBtn.classList.add('active');
+        navLinks.classList.add('active');
+        document.body.classList.add('menu-open');
+    }
+
+    function closeMenu() {
+        mobileBtn.classList.remove('active');
+        navLinks.classList.remove('active');
+        document.body.classList.remove('menu-open');
+        // Collapse all open dropdowns
+        document.querySelectorAll('.dropdown.open').forEach(d => {
+            d.classList.remove('open');
+        });
+    }
+
+    if (mobileBtn && navLinks) {
+
+        /* Hamburger toggle */
+        mobileBtn.addEventListener('click', e => {
             e.stopPropagation();
-            if (navLinks.classList.contains('active')) {
-                closeMenu();
-            } else {
-                openMenu();
-            }
+            navLinks.classList.contains('active') ? closeMenu() : openMenu();
         });
 
-        // Mobile tap-to-toggle for dropdown parents
-        const isMobile = () => window.innerWidth <= 768;
-        document.querySelectorAll('.dropdown > a').forEach(link => {
-            link.addEventListener('click', (e) => {
-                if (isMobile()) {
-                    e.preventDefault();
-                    const dropdown = link.parentElement;
-                    const isOpen = dropdown.classList.contains('open');
-                    // Close all others
-                    document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
-                    // Toggle this one
-                    if (!isOpen) dropdown.classList.add('open');
-                }
-            });
-        });
-
-        // Close mobile menu when a non-dropdown link is clicked
-        const links = navLinks.querySelectorAll('a');
-        links.forEach(link => {
-            // Skip dropdown parent links (handled above)
-            if (!link.parentElement.classList.contains('dropdown') || link.closest('.dropdown-content')) {
-                link.addEventListener('click', () => closeMenu());
-            }
-        });
-
-        // Close menu when clicking outside (on the backdrop)
-        document.addEventListener('click', (e) => {
-            if (navLinks.classList.contains('active') &&
+        /* Close when tapping the backdrop (body::before overlay) */
+        document.body.addEventListener('click', e => {
+            if (
+                navLinks.classList.contains('active') &&
                 !navLinks.contains(e.target) &&
-                !mobileMenuBtn.contains(e.target)) {
+                !mobileBtn.contains(e.target)
+            ) {
+                closeMenu();
+            }
+        });
+
+        /* Close on Escape key */
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && navLinks.classList.contains('active')) {
                 closeMenu();
             }
         });
     }
 
-    // 2. Navbar Scroll Effect
-    const navbar = document.getElementById('navbar');
-    const hasHero = document.querySelector('.hero') !== null;
-    
-    const handleScroll = () => {
-        if (!hasHero || window.scrollY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
+
+    /* ─────────────────────────────────────────────
+       3.  Mobile dropdowns — tap to expand / collapse
+           (inject chevron arrows into parent links)
+    ───────────────────────────────────────────── */
+    const dropdownParents = document.querySelectorAll('.dropdown > a');
+
+    // Inject a <span class="arrow"></span> into each dropdown parent link
+    dropdownParents.forEach(link => {
+        if (!link.querySelector('.arrow')) {
+            const arrow = document.createElement('span');
+            arrow.className = 'arrow';
+            arrow.setAttribute('aria-hidden', 'true');
+            link.appendChild(arrow);
         }
-    };
 
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Check on init
+        link.addEventListener('click', e => {
+            // Only intercept on mobile widths
+            if (window.innerWidth > 768) return;
 
-    // 3. Scroll Reveal Animations with Intersection Observer
-    const animatedElements = document.querySelectorAll('.fade-in, .glass-card, .feature-item, .about-text');
-    
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.15
-    };
+            e.preventDefault();
+            e.stopPropagation();
 
-    const revealOnScroll = new IntersectionObserver((entries, observer) => {
+            const dropdown = link.parentElement;
+            const isOpen   = dropdown.classList.contains('open');
+
+            // Close all other open dropdowns
+            document.querySelectorAll('.dropdown.open').forEach(d => {
+                if (d !== dropdown) d.classList.remove('open');
+            });
+
+            // Toggle this one
+            dropdown.classList.toggle('open', !isOpen);
+        });
+    });
+
+    /* Close menu when user clicks an actual destination link (not parent) */
+    if (navLinks) {
+        navLinks.querySelectorAll('a').forEach(link => {
+            // Skip dropdown parent links (they're handled above on mobile)
+            const isDropdownParent = link.parentElement.classList.contains('dropdown') &&
+                                     !link.closest('.dropdown-content');
+            if (!isDropdownParent) {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) closeMenu();
+                });
+            }
+        });
+    }
+
+
+    /* ─────────────────────────────────────────────
+       4.  Scroll-reveal animations (Intersection Observer)
+    ───────────────────────────────────────────── */
+    const animatedEls = document.querySelectorAll(
+        '.fade-in, .glass-card, .feature-item, .about-text'
+    );
+
+    const revealObserver = new IntersectionObserver((entries, obs) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('appear');
-                observer.unobserve(entry.target); // Stop observing once it has appeared
+                obs.unobserve(entry.target);
             }
         });
-    }, observerOptions);
+    }, { rootMargin: '0px', threshold: 0.12 });
 
-    animatedElements.forEach(el => {
-        revealOnScroll.observe(el);
-    });
+    animatedEls.forEach(el => revealObserver.observe(el));
 
-    // 4. Smooth Scrolling for Anchor Links (fallback for smooth-behavior CSS)
+
+    /* ─────────────────────────────────────────────
+       5.  Smooth scroll for in-page anchor links
+    ───────────────────────────────────────────── */
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
-            const targetId = this.getAttribute('href');
-            if(targetId === '#') return;
-            
-            const targetElement = document.querySelector(targetId);
-            
-            if (targetElement) {
+            const id = this.getAttribute('href');
+            if (id === '#') return;
+            const target = document.querySelector(id);
+            if (target) {
                 e.preventDefault();
-                const headerOffset = 80;
-                const elementPosition = targetElement.getBoundingClientRect().top;
-                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-  
+                const offset = 80;
                 window.scrollTo({
-                    top: offsetPosition,
+                    top: target.getBoundingClientRect().top + window.pageYOffset - offset,
                     behavior: 'smooth'
                 });
             }
         });
     });
 
-    // 5. Accordion Interactive Gallery
+
+    /* ─────────────────────────────────────────────
+       6.  Accordion interactive gallery
+    ───────────────────────────────────────────── */
     const accordionItems = document.querySelectorAll('.accordion-item');
+
     if (accordionItems.length > 0) {
         accordionItems.forEach(item => {
-            // Hover for desktop
             item.addEventListener('mouseenter', () => {
                 accordionItems.forEach(el => el.classList.remove('active'));
                 item.classList.add('active');
             });
-            // Focus for accessibility and mobile taps
             item.addEventListener('focus', () => {
                 accordionItems.forEach(el => el.classList.remove('active'));
                 item.classList.add('active');
             });
         });
     }
+
 });
